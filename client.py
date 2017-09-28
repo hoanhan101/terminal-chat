@@ -8,28 +8,29 @@
     Date: 09/26/17
 """
 
-# import socket
+import socket
+
+#TCP_ADDRESS = '127.0.0.1'
 #
-# TCP_ADDRESS = '127.0.0.1'
+#TCP_PORT = 9000
 #
-# TCP_PORT = 9000
+#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#s.connect((TCP_ADDRESS, TCP_PORT))
 #
-# s.connect((TCP_ADDRESS, TCP_PORT))
+#while True:
+#    MESSAGE = input("input: ")        # the message to send to the server
+#    s.send(MESSAGE.encode())
+#    print('Sent {0} to {1}'.format(MESSAGE, TCP_ADDRESS))
 #
-# while True:
-#     MESSAGE = input("input: ")		# the message to send to the server
-#     s.send(MESSAGE.encode())
-#     print('Sent {0} to {1}'.format(MESSAGE, TCP_ADDRESS))
-#
-# s.close()
+#s.close()
 
 import threading
 import time
 import socket
 
 TCP_ADDRESS = '127.0.0.1'
+#TCP_ADDRESS = '10.241.32.238'
 TCP_PORT = 9000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -47,7 +48,7 @@ class TimeThread(threading.Thread):
 
     def send(self):
         while True:
-            MESSAGE = input("input: ")		# the message to send to the server
+            MESSAGE = input("input: ")        # the message to send to the server
             s.send(MESSAGE.encode())
             print('Sent {0} to {1}'.format(MESSAGE, TCP_ADDRESS))
 
@@ -56,13 +57,17 @@ class TimeThread(threading.Thread):
     def receive(self):
         while True:
             data = s.recv(1024).decode()
-            print('Return message : {0}'.format(data))
+            if data != "":
+                print('Return message : {0}'.format(data))
+                data = s.recv(1024).decode()
+
+        #s.close()
 
     def run(self):
         print('Starting {0}'.format(self.name))
         if self.function == "send":
             self.send()
-        else:
+        elif self.function == "receive":
             self.receive()
         print('Finishing {0}'.format(self.name))
 
@@ -85,4 +90,5 @@ thread_4.start()
 # threads.append(thread_3)
 #
 # for thread in threads:
-# 	thread.join()
+#     thread.join()
+

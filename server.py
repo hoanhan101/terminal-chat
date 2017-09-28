@@ -14,7 +14,9 @@ import socket
 
 TCP_ADDRESS = '0.0.0.0'
 TCP_PORT = 9000
-BUFFER_SIZE = 40
+BUFFER_SIZE = 1024
+
+CLIENTS = {}
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -30,20 +32,29 @@ class TimeThread(threading.Thread):
 
     def connect(self):
         while True:
+            #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            #s.bind((TCP_ADDRESS, TCP_PORT))
+            
             s.listen(1)
 
             conn, addr = s.accept()
+            CLIENTS[conn] = addr[0]
             print('Connection address: {0}'.format(addr[0]))
 
             data = conn.recv(BUFFER_SIZE).decode()
             while data != "":
                 print("received data: {0}".format(data))
+                #conn.send(data.encode())
+                for client in CLIENTS:
+                    print(client)
+                    client.send(data.encode())
+                    print('Sent data: {0} to {1}'.format(data,CLIENTS[client]))
+#                print('Sent data: {0}'.format(data))
                 data = conn.recv(BUFFER_SIZE).decode()
-            print("received data: {0}".format(data))
 
             conn.close()
 
-        sock.close()
+        #s.close()
 
     def run(self):
         print('Starting {0}'.format(self.name))
@@ -68,3 +79,5 @@ threads.append(thread_3)
 
 for thread in threads:
 	thread.join()
+
+sock.close()
