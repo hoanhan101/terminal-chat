@@ -48,18 +48,24 @@ class TimeThread(threading.Thread):
 
     def send(self):
         while True:
-            MESSAGE = input("input: ")        # the message to send to the server
+            #MESSAGE = input("input: ")        # the message to send to the server
+            MESSAGE = input("")
             s.send(MESSAGE.encode())
-            print('Sent {0} to {1}'.format(MESSAGE, TCP_ADDRESS))
+            #print('Sent {0} to {1}'.format(MESSAGE, TCP_ADDRESS))
 
         s.close()
 
     def receive(self):
         while True:
+            #client = s.recv(1024).decode()
             data = s.recv(1024).decode()
+            #print('receieved data 1: {0}'.format(data))
+
             if data != "":
-                print('Return message : {0}'.format(data))
-                data = s.recv(1024).decode()
+                #print('>> {1} : {0}'.format(data,client))
+                print(data)
+                #data = s.recv(1024).decode()
+                #print('receieved data 2: {0}'.format(data))
 
         #s.close()
 

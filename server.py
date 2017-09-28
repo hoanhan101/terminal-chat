@@ -42,15 +42,20 @@ class TimeThread(threading.Thread):
             print('Connection address: {0}'.format(addr[0]))
 
             data = conn.recv(BUFFER_SIZE).decode()
+            sender = CLIENTS[conn]
             while data != "":
                 print("received data: {0}".format(data))
                 #conn.send(data.encode())
                 for client in CLIENTS:
-                    print(client)
-                    client.send(data.encode())
-                    print('Sent data: {0} to {1}'.format(data,CLIENTS[client]))
+                    #print(client)
+                    #client.send(sender.encode())
+                    #client.send(data.encode())
+                    message = '>> {0} : {1}'.format(sender, data)
+                    client.send(message.encode())
+                    print('Sent data to {0}'.format(CLIENTS[client]))
 #                print('Sent data: {0}'.format(data))
                 data = conn.recv(BUFFER_SIZE).decode()
+                print('New data: {0}'.format(data))
 
             conn.close()
 
