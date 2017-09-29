@@ -26,3 +26,10 @@ Each client has two threads: one to send and one to receive.
 - Fix oserror: per permanently
 - How to test our chat app
 - Nidesh DDoS acttack idea, "Around the World" one.
+- UDP multicast
+- curses module
+- for UDP - may be helpful to send a number with a message to keep the count and make sure all messages are delivered (recovery)
+- special escape
+- doc's requirements
+
+
