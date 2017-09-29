@@ -17,72 +17,52 @@ TCP_PORT = 9000
 BUFFER_SIZE = 1024
 
 CLIENTS = {}
+THREADS = []
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 s.bind((TCP_ADDRESS, TCP_PORT))
 
-class TimeThread(threading.Thread):
+class ServerThread(threading.Thread):
 
-    def __init__(self, thread_id, name):
+    def __init__(self, thread_id):
 
         threading.Thread.__init__(self)
         self.thread_id = thread_id
-        self.name = name
 
     def connect(self):
         while True:
-            #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #s.bind((TCP_ADDRESS, TCP_PORT))
-            
             s.listen(1)
 
             conn, addr = s.accept()
             CLIENTS[conn] = addr[0]
+
             print('Connection address: {0}'.format(addr[0]))
 
             data = conn.recv(BUFFER_SIZE).decode()
             sender = CLIENTS[conn]
+            
             while data != "":
-                print("received data: {0}".format(data))
-                #conn.send(data.encode())
+                print("Received \"{0}\" from IP {1}".format(data, sender))
                 for client in CLIENTS:
-                    #print(client)
-                    #client.send(sender.encode())
-                    #client.send(data.encode())
-                    message = '>> {0} : {1}'.format(sender, data)
+                    message = '{0} : {1}'.format(sender, data)
                     client.send(message.encode())
-                    print('Sent data to {0}'.format(CLIENTS[client]))
-#                print('Sent data: {0}'.format(data))
+                    print("Sent to {0}".format(CLIENTS[client]))
                 data = conn.recv(BUFFER_SIZE).decode()
-                print('New data: {0}'.format(data))
+                #print("New data: {0}".format(data))
 
             conn.close()
 
-        #s.close()
+        s.close()
 
     def run(self):
-        print('Starting {0}'.format(self.name))
+        print("Starting Thread {0}".format(self.thread_id))
         self.connect()
-        print('Finishing {0}'.format(self.name))
+        print("Finishing Thread {0}".format(self.thread_id))
 
-
-thread_lock = threading.Lock()
-threads = []
-
-thread_1 = TimeThread(1, "thread_1")
-thread_2 = TimeThread(2, "thread_2")
-thread_3 = TimeThread(3, "thread_3")
+thread_1 = ServerThread(1)
+thread_2 = ServerThread(2)
+thread_3 = ServerThread(3)
 
 thread_1.start()
 thread_2.start()
 thread_3.start()
-
-threads.append(thread_1)
-threads.append(thread_2)
-threads.append(thread_3)
-
-for thread in threads:
-	thread.join()
-
-sock.close()
