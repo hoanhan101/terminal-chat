@@ -19,8 +19,7 @@ Each client has two threads: one to send and one to receive.
 ## Errors
 - **OSError: [Errno 9] Bad file descriptor:** It happens when a client uses ^C to quit the chat.
 - **[errno 48] address already in use:** It happens because we don't close the socket properly.
--  ![I was blocked]
-/i_was_blocked.png
+- ![I was blocked](images/i_was_blocked.png)
 
 ## To-do
 - Open a new thread whenever a new connection ask for, custom thread number?, limit?
