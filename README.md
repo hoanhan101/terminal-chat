@@ -4,11 +4,10 @@ A simple group chat app.
 
 ## Design priciples
 ### Server
-We set up a server to handle the mutiple requests.
+We set up a server to handle the mutiple requests using **Thread**. At the moment, the maximum threads are 10.
 Whenever a request comes, server does:
 - accept the request
 - add a client to a dictionary that holds the connection object and IP address
-- create a new thread for the client
 - send the message to all the clients in the dictionary
 
 ### Client

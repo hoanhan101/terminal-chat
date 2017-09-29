@@ -17,7 +17,6 @@ TCP_PORT = 9000
 BUFFER_SIZE = 1024
 
 CLIENTS = {}
-THREADS = []
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((TCP_ADDRESS, TCP_PORT))
@@ -59,10 +58,18 @@ class ServerThread(threading.Thread):
         self.connect()
         print("Finishing Thread {0}".format(self.thread_id))
 
-thread_1 = ServerThread(1)
-thread_2 = ServerThread(2)
-thread_3 = ServerThread(3)
 
-thread_1.start()
-thread_2.start()
-thread_3.start()
+MAXIMUM_THREADS = 10
+for i in range(MAXIMUM_THREADS):
+    thread = ServerThread(i)
+    thread.start()
+
+
+#thread_1 = ServerThread(1)
+#thread_2 = ServerThread(2)
+#thread_3 = ServerThread(3)
+#
+#thread_1.start()
+#thread_2.start()
+#thread_3.start()
+
