@@ -26,11 +26,40 @@ s.bind(('', MCAST_PORT))
 mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
+#client_addresses = []
+#
+#while True:
+#    data, addr = s.recvfrom(10240)
+#    
+#    if addr not in client_addresses:
+#        client_addresses.append(addr)
+#    
+#
+#    data = data.decode()
+#    print("{0} received: {1}".format(addr[0], data))
+#
+#    print(client_addresses)
+#    # bounce the message back to the caller
+#    for client_addr in client_addresses:
+#        s.sendto(data.encode(), client_addr)
+#        print("Sent {0} to {1}".format(data, addr[0]))
+
+
+client_addresses = {}
+
 while True:
     data, addr = s.recvfrom(10240)
-    data = data.decode()
-    print("{0} received: {1}".format(addr[0], data))
+    
+    if addr[0] in client_addresses:
+        client_addresses[addr[0]] = addr[1]
+    else:
+        client_addresses[addr[0]] = addr[1]
 
+    data = data.decode()
+    print("RECEIVED {0} FROM {1}".format(data, addr[0]))
+
+    print(client_addresses)
     # bounce the message back to the caller
-    s.sendto(data.encode(), addr)
-    print("Sent {0} to {1}".format(data, addr[0]))
+    for IP, value in client_addresses.items():
+        s.sendto(data.encode(), (IP, value))
+        print("SENT {0} TO {1}".format(data, IP))
