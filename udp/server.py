@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
+
 """
-    broad_serve2.py - UDP server that listens for multicast messages on port 9000 and prints them out and responds
-                      to the sender with the message that was sent.
-    Author: Andrew Cencini (acencini@bennington.edu)
-    Date: 9/17/2017
+    server.py - UDP Chat app server
+    Authors:
+    - Hoanh An (hoanhan@bennington.edu)
+    - Nidesh Chitrakar (nideshchitrakar@bennington.edu)
+    - Dung Le (dungle@bennington.edu)
+    Date: 09/29/17
 """
+
 import socket
 import struct
 
-MCAST_GRP = '224.0.0.1'		# listen to all hosts on the local subnet
-MCAST_PORT = 9000		# listen on UDP port 9000
+MCAST_GRP = '224.0.0.1'
+MCAST_PORT = 9000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -26,25 +30,6 @@ s.bind(('', MCAST_PORT))
 mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
-#client_addresses = []
-#
-#while True:
-#    data, addr = s.recvfrom(10240)
-#    
-#    if addr not in client_addresses:
-#        client_addresses.append(addr)
-#    
-#
-#    data = data.decode()
-#    print("{0} received: {1}".format(addr[0], data))
-#
-#    print(client_addresses)
-#    # bounce the message back to the caller
-#    for client_addr in client_addresses:
-#        s.sendto(data.encode(), client_addr)
-#        print("Sent {0} to {1}".format(data, addr[0]))
-
-
 client_addresses = {}
 
 while True:
@@ -52,8 +37,6 @@ while True:
 
     data = data.decode()
     if data[0] == '@':
-        #add the username info to client_addresses
-        #print(data)
         client_addresses[addr[0]] = [data]
         client_addresses[addr[0]].append(addr[1])
         print('User {0} has connected.'.format(data))
@@ -61,13 +44,12 @@ while True:
         user = client_addresses[addr[0]][0]
         print("RECEIVED {0} FROM {1}".format(data, user))
 
-    client_addresses[addr[0]][1] = addr[1]
+        client_addresses[addr[0]][1] = addr[1]
 
-    print(client_addresses)
-    # bounce the message back to the caller
-    for IP, port in client_addresses.items():
-        if IP == addr[0]:
-            pass
-        else:
-            s.sendto(data.encode(), (IP, port))
-            print("SENT {0} TO {1}".format(data, IP))
+        # bounce the message back to the caller
+        for IP, port in client_addresses.items():
+            if IP == addr[0]:
+                pass
+            else:
+                s.sendto(data.encode(), (IP, port))
+                print("SENT {0} TO {1}".format(data, IP))

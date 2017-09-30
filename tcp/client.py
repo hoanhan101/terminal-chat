@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-    client.py - Chat app client
+    client.py - TCP Chat app client
     Authors:
         - Hoanh An (hoanhan@bennington.edu)
         - Nidesh Chitrakar (nideshchitrakar@bennington.edu)

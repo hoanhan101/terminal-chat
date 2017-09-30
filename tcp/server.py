@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-    Server.py - Chat app server
+    Server.py - TCP Chat app server
     Authors:
         - Hoanh An (hoanhan@bennington.edu)
         - Nidesh Chitrakar (nideshchitrakar@bennington.edu)
