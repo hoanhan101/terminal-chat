@@ -20,6 +20,11 @@ class ClientThread(threading.Thread):
         self.function = function
 
     def send(self):
+        print('Welcome to our UDP chat.')
+        username = input('To get started, please provide a username: ')
+        username = '@' + username
+        s.sendto(username.encode(), (MCAST_GRP, MCAST_PORT))
+        
         while True:
             MESSAGE = input(">> ")
 
@@ -40,7 +45,7 @@ class ClientThread(threading.Thread):
             self.send()
         elif self.function == "RECEIVE":
             self.receive()
-        
+
         print('Finishing Thread {0}'.format(self.thread_id))
 
 

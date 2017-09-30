@@ -49,17 +49,25 @@ client_addresses = {}
 
 while True:
     data, addr = s.recvfrom(10240)
-    
-    if addr[0] in client_addresses:
-        client_addresses[addr[0]] = addr[1]
-    else:
-        client_addresses[addr[0]] = addr[1]
 
     data = data.decode()
-    print("RECEIVED {0} FROM {1}".format(data, addr[0]))
+    if data[0] == '@':
+        #add the username info to client_addresses
+        #print(data)
+        client_addresses[addr[0]] = [data]
+        client_addresses[addr[0]].append(addr[1])
+        print('User {0} has connected.'.format(data))
+    else:
+        user = client_addresses[addr[0]][0]
+        print("RECEIVED {0} FROM {1}".format(data, user))
+
+    client_addresses[addr[0]][1] = addr[1]
 
     print(client_addresses)
     # bounce the message back to the caller
-    for IP, value in client_addresses.items():
-        s.sendto(data.encode(), (IP, value))
-        print("SENT {0} TO {1}".format(data, IP))
+    for IP, port in client_addresses.items():
+        if IP == addr[0]:
+            pass
+        else:
+            s.sendto(data.encode(), (IP, port))
+            print("SENT {0} TO {1}".format(data, IP))
