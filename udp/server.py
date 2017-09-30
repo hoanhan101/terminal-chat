@@ -47,9 +47,9 @@ while True:
         client_addresses[addr[0]][1] = addr[1]
 
         # bounce the message back to the caller
-        for IP, port in client_addresses.items():
+        for IP in client_addresses:
             if IP == addr[0]:
                 pass
             else:
-                s.sendto(data.encode(), (IP, port))
+                s.sendto(data.encode(), (IP, client_addresses[IP][1]))
                 print("SENT {0} TO {1}".format(data, IP))
