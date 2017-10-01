@@ -37,6 +37,11 @@ For both TCP and UDP:
 - ~~**[errno 48] address already in use:** It happens because we don't close the socket properly.~~
 
 ## To-do
+### Both
+- Write a desgin doc
+- Error handling
+- How to test
+
 ### TCP
 - ~~Fix oserror: per permanently~~
 - Open a new thread whenever a new connection ask for, custom thread number?, limit?
@@ -51,3 +56,8 @@ For both TCP and UDP:
 - Curses module for seperate chat screen
 - Special escape
 - Add doc's requirements
+
+## Questions/ Write-up
+- How to do without threading? Message queue?
+
+

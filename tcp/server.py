@@ -28,7 +28,7 @@ class ServerThread(threading.Thread):
         threading.Thread.__init__(self)
         self.thread_id = thread_id
 
-    def connect(self):
+    def listen(self):
         while True:
             s.listen(1)
 
@@ -55,7 +55,7 @@ class ServerThread(threading.Thread):
 
     def run(self):
         print("Starting Thread {0}".format(self.thread_id))
-        self.connect()
+        self.listen()
         print("Finishing Thread {0}".format(self.thread_id))
 
 
@@ -63,7 +63,6 @@ MAXIMUM_THREADS = 10
 for i in range(MAXIMUM_THREADS):
     thread = ServerThread(i)
     thread.start()
-
 
 #thread_1 = ServerThread(1)
 #thread_2 = ServerThread(2)

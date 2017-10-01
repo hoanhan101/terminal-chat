@@ -12,13 +12,17 @@ import threading
 import time
 import socket
 
-#TCP_ADDRESS = '127.0.0.1'
-TCP_ADDRESS = '10.10.241.85'
+TCP_ADDRESS = '127.0.0.1'
+#TCP_ADDRESS = '10.10.241.85'
 TCP_PORT = 9000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.settimeout(5)
 
+try:
 s.connect((TCP_ADDRESS, TCP_PORT))
+except socket.error, exc:
+    print "Caught exception socket.error : %s" % exc
 
 class ClientThread(threading.Thread):
 

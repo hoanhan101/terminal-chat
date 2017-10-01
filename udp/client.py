@@ -25,13 +25,17 @@ class ClientThread(threading.Thread):
 
     def send(self):
         print('Welcome to our UDP chat.')
-        try:
-            username = input('To get started, please provide a username: ')
-            username = '@' + username
-            s.sendto(username.encode(), (MCAST_GRP, MCAST_PORT))
-        except ValueError:
-            if not username:
-                raise ValueError("Username can't be NULL")
+        while True:
+                try:
+                    username = input('To get started, please provide a username: ')
+                    if not username:
+                        raise ValueError("Username can't be NULL")
+                    else:
+                        username = '@' + username
+                        s.sendto(username.encode(), (MCAST_GRP, MCAST_PORT))
+                        break
+                except ValueError as e:
+                    print(e)
 
         while True:
             MESSAGE = input("{0}: ".format(username))
@@ -39,7 +43,6 @@ class ClientThread(threading.Thread):
             # broadcast our message to the world
             s.sendto(MESSAGE.encode(), (MCAST_GRP, MCAST_PORT))
             #print("SENT {0} TO {1}".format(MESSAGE, MCAST_GRP))
-
 
     def receive(self):
         while True:
