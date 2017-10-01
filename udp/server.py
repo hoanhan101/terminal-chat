@@ -34,7 +34,7 @@ s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 """
     a dictionary to store the client's information in the format:
-    { IP : [username, port, message_count] }
+    { IP : [username, address_port, message_count] }
 """
 client_addresses = {}
 print('Server is now running')

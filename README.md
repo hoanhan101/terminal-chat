@@ -1,31 +1,28 @@
 # Group Chat Application
 
-A simple group chat app.
+## TCP Design
+### Server
+We set up a server to handle the mutiple requests using **Thread**. At the moment, we have a fixed number of threads equals to 10. Each client has his/her own thread so our server can only handle maximum 10 clients. We will look for better solution in our freetime since our UDP chat app is our main focus at the moment.
 
-## Design priciples
-### TCP
-### > Server
-We set up a server to handle the mutiple requests using **Thread**. At the moment, the maximum threads are 10.
-Whenever a request comes, a server does:
-- accept the request
-- add a client to a dictionary that holds the connection object and IP address
-- send the message to all the clients in the dictionary
+Back to our design priciples, when a request comes, a server get connection and address. We save the connection object and IP from the address in a dictionary as the format `{ConnectionObject : IP}`.  We get the data from the connection object and send back to all the client in that dictionary.
 
-### > Client
-Each client has two threads: one to send and one to receive.
+### Client
+Each client have 2 threads: one to send and one to receive.
 
-### UDP
-### > Server
-We set up a server to listen to all connection.
-Whenever a request comes, a server:
-- get the data
-- add the IP address of the connection, port and username to a dictionary
-- send back the message to all clients in the dictionary
+## UDP Design
+### Server:
+We set up the server that listen to all the connections. Whenever a request comes, a server first get the data and address. Since in the client side, we set the first message sent by the client is the his/her username. We use that data to store the username in a dictionary as the format: `{IP : [username, address_port, message_count]}`
 
-### > Client
-Each client has two threads: one to send and one to receive
+Each time the **same** client login, he/she has the same IP but different port. We save the address port so we can update it constantly. The message count is used to count the message received of each client. It increases by 1 everytime client send a new message. In the future, we can use that sequential proof to prevent data loss.
 
-## How to test
+Now we have the username in the first message, so from the second message, we only received data from the client. We save that data in an array which holds the username and data. We know username of the sender, so we don't have to use the IP as an indentifier.
+
+In the end, we use the client's dictionary to notify everyone in the group chat.
+
+### Client
+Each client have 2 threads: one to send and one to receive.
+
+## Testing
 For both TCP and UDP:
 - Make sure all the machine you are testing are on the **same network**.
 - Run the server file on **1 machine** and client file on **diffrent machines**.
@@ -38,9 +35,8 @@ For both TCP and UDP:
 
 ## To-do
 ### Both
-- Write a desgin doc
-- Error handling
-- How to test
+- ~~Write a desgin doc~~
+- Error Handling
 
 ### TCP
 - ~~Fix oserror: per permanently~~
@@ -59,5 +55,4 @@ For both TCP and UDP:
 
 ## Questions/ Write-up
 - How to do without threading? Message queue?
-
 
