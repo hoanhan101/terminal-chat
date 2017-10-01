@@ -12,6 +12,8 @@
 import socket
 import threading
 
+import pickle
+
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 9000
 
@@ -24,7 +26,6 @@ class ClientThread(threading.Thread):
         self.function = function
 
     def send(self):
-        print('Welcome to our UDP chat.')
         while True:
                 try:
                     username = input('To get started, please provide a username: ')
@@ -47,12 +48,17 @@ class ClientThread(threading.Thread):
     def receive(self):
         while True:
             data, addr = s.recvfrom(1024)
-            data = data.decode()
+            #data = data.decode()
             #print("RECEIVED {0} FROM {1}".format(data, addr[0]))
-            print(data)
+            #print(data)
+            messageArray = pickle.loads(data)
+            sender = messageArray[0]
+            message = messageArray[1]
+            print(' >> {0} : {1}'.format(sender,message))
 
     def run(self):
-        print('Starting Thread {0}'.format(self.thread_id))
+        #print('Starting Thread {0}'.format(self.thread_id))
+        print('Welcome to our UDP chat.')
         
         if self.function == "SEND":
             self.send()

@@ -12,6 +12,8 @@
 import socket
 import struct
 
+import pickle
+
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 9000
 
@@ -36,31 +38,60 @@ while True:
     data, addr = s.recvfrom(10240)
 
     data = data.decode()
+    message = []
     
     if data != "":
-        if data[0] == '@':
-            client_addresses[addr[0]] = [data]
-            client_addresses[addr[0]].append(addr[1])
-            client_addresses[addr[0]].append(0)
-#            message = 'User {0} has connected.'.format(data)
-            print('User {0} has connected.'.format(data))
-#            s.sendto(message.encode(), (addr[0], client_addresses[addr[0]][1]))
+        if data[0] == '@':      # check if input string is username
+            if bool(client_addresses) == False:      # if dictionary is empty
+                client_addresses[addr[0]] = [data]
+                client_addresses[addr[0]].append(addr[1])
+                client_addresses[addr[0]].append(0)
+                print('User {0} has connected from IP {1}.'.format(data,addr[0]))
+                message = ['SERVER','{0} has joined the group chat.'.format(data)]
+            else:       # dictionary is not empty
+                # check if user exits in dictionary
+                for client in client_addresses:
+                    if data in client_addresses[client]:
+                        print('user already exists!!!!1!')
+                        message = ['SERVER','Username {0} already exists in the session. Please choose another username.'.format(data)]
+                        s.sendto(pickle.dumps(message), addr)
+                        break
+                    else:
+                        client_addresses[addr[0]] = [data]
+                        client_addresses[addr[0]].append(addr[1])
+                        client_addresses[addr[0]].append(0)
+                        print('User {0} has connected from IP {1}.'.format(data,addr[0]))
+                        print(client_addresses)
+                        message = ['SERVER','{0} has joined the group chat.'.format(data)]
+                        break
+                    
+#            for client in client_addresses:
+#                if data in client_addresses[client]:
+#                    print('user already exists!!!!1!')
+#                    message = ['SERVER','Username {0} already exists in the session. Please choose another username.'.format(data)]
+#
+#                client_addresses[addr[0]] = [data]
+#                client_addresses[addr[0]].append(addr[1])
+#                client_addresses[addr[0]].append(0)
+#                print('User {0} has connected from IP {1}.'.format(data,addr[0]))
+#                message = ['SERVER','{0} has joined the group chat.'.format(data)]
+
         else:
+            print(client_addresses)
             username = client_addresses[addr[0]][0]
             client_addresses[addr[0]][2] += 1
-
-            message = "{0}: {1}".format(username, data)
 
             print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
 
             client_addresses[addr[0]][1] = addr[1]
-
-            # bounce the message back to the caller
-            for IP in client_addresses:
-                if IP == addr[0]:
-                    pass
-                else:
-                    s.sendto(message.encode(), (IP, client_addresses[IP][1]))
-                    print("SENT {0} TO {1}".format(data, username))
+            
+            message = [username, data]
+        # bounce the message back to the caller
+        for IP in client_addresses:
+            if IP == addr[0]:
+                pass
+            else:
+                s.sendto(pickle.dumps(message), (IP, client_addresses[IP][1]))
+                #print(" << {1} SENT {0} TO THE GROUP CHAT".format(data, username))
 
 
