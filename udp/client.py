@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    client.py - TCP Chat app client
+    client.py - UDP Chat app client
     Authors:
     - Hoanh An (hoanhan@bennington.edu)
     - Nidesh Chitrakar (nideshchitrakar@bennington.edu)
@@ -25,22 +25,28 @@ class ClientThread(threading.Thread):
 
     def send(self):
         print('Welcome to our UDP chat.')
-        username = input('To get started, please provide a username: ')
-        username = '@' + username
-        s.sendto(username.encode(), (MCAST_GRP, MCAST_PORT))
-        
+        try:
+            username = input('To get started, please provide a username: ')
+            username = '@' + username
+            s.sendto(username.encode(), (MCAST_GRP, MCAST_PORT))
+        except ValueError:
+            if not username:
+                raise ValueError("Username can't be NULL")
+
         while True:
-            MESSAGE = input(">> ")
+            MESSAGE = input("{0}: ".format(username))
 
             # broadcast our message to the world
             s.sendto(MESSAGE.encode(), (MCAST_GRP, MCAST_PORT))
-            print("SENT {0} TO {1}".format(MESSAGE, MCAST_GRP))
+            #print("SENT {0} TO {1}".format(MESSAGE, MCAST_GRP))
+
 
     def receive(self):
         while True:
             data, addr = s.recvfrom(1024)
             data = data.decode()
-            print("RECEIVED {0} FROM {1}".format(data, addr[0]))
+            #print("RECEIVED {0} FROM {1}".format(data, addr[0]))
+            print(data)
 
     def run(self):
         print('Starting Thread {0}'.format(self.thread_id))

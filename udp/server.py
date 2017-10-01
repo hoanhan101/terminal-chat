@@ -36,20 +36,31 @@ while True:
     data, addr = s.recvfrom(10240)
 
     data = data.decode()
-    if data[0] == '@':
-        client_addresses[addr[0]] = [data]
-        client_addresses[addr[0]].append(addr[1])
-        print('User {0} has connected.'.format(data))
-    else:
-        user = client_addresses[addr[0]][0]
-        print("RECEIVED {0} FROM {1}".format(data, user))
-
-        client_addresses[addr[0]][1] = addr[1]
-
-        # bounce the message back to the caller
-        for IP in client_addresses:
-            if IP == addr[0]:
-                pass
+    
+    try:
+        if data != "":
+            if data[0] == '@':
+                client_addresses[addr[0]] = [data]
+                client_addresses[addr[0]].append(addr[1])
+                client_addresses[addr[0]].append(0)
+                print('User {0} has connected.'.format(data))
             else:
-                s.sendto(data.encode(), (IP, client_addresses[IP][1]))
-                print("SENT {0} TO {1}".format(data, IP))
+                username = client_addresses[addr[0]][0]
+                client_addresses[addr[0]][2] += 1
+
+                message = "{0}: {1}".format(username, data)
+
+                print("FROM {0} MESSAGE #{1}: {2}".format(username, client_addresses[addr[0]][2], data))
+
+                client_addresses[addr[0]][1] = addr[1]
+
+                # bounce the message back to the caller
+                for IP in client_addresses:
+                    if IP == addr[0]:
+                        pass
+                    else:
+                        s.sendto(message.encode(), (IP, client_addresses[IP][1]))
+                        print("SENT {0} TO {1}".format(data, username))
+    except IndexError:
+        print("Empty string!")
+
