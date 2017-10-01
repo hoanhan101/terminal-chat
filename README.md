@@ -11,11 +11,11 @@ Each client have 2 threads: one to send and one to receive.
 
 ## UDP Design
 ### Server:
-We set up the server that listen to all the connections. Whenever a request comes, a server first get the data and address. Since in the client side, we set the first message sent by the client is the his/her username. We use that data to store the username in a dictionary as the format: `{IP : [username, address_port, message_count]}`
+We set up the server that listen to all the connections. Whenever a request comes, a server first get the data and address. Since in the client side, we set the first message sent by the client is his/her username. We use that data to store the username in a dictionary as the format: `{IP : [username, address_port, message_count]}`
 
-Each time the **same** client login, he/she has the same IP but different port. We save the address port so we can update it constantly. The message count is used to count the message received of each client. It increases by 1 everytime client send a new message. In the future, we can use that sequential proof to prevent data loss.
+Each time the **same** client login, he/she has the same IP but different port. We save the address port so we can update it constantly. The message count is used to count the message received of each client. It increases by 1 everytime the client send a new message. In the future, we can use that sequential proof to prevent data loss.
 
-Now we have the username in the first message, so from the second message, we only received data from the client. We save that data in an array which holds the username and data. We know username of the sender, so we don't have to use the IP as an indentifier.
+Now we have the username from the first message, so from the second message, we only received data from the client. We save that data in an array which holds the username and data. We know username of the sender, so we don't have to use the IP as an indentifier.
 
 In the end, we use the client's dictionary to notify everyone in the group chat.
 
