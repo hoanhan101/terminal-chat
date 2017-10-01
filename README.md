@@ -3,7 +3,7 @@
 A simple group chat app.
 
 ## Design priciples
-## TCP
+### TCP
 ### > Server
 We set up a server to handle the mutiple requests using **Thread**. At the moment, the maximum threads are 10.
 Whenever a request comes, a server does:
@@ -14,7 +14,7 @@ Whenever a request comes, a server does:
 ### > Client
 Each client has two threads: one to send and one to receive.
 
-## UDP
+### UDP
 ### > Server
 We set up a server to listen to all connection.
 Whenever a request comes, a server:
@@ -32,18 +32,18 @@ For both TCP and UDP:
 - Follow the client file instruction.
 
 ## Errors
-## TCP
+### TCP
 - **OSError: [Errno 9] Bad file descriptor:** It happens when a client uses ^C to quit the chat.
 - ~~**[errno 48] address already in use:** It happens because we don't close the socket properly.~~
 
 ## To-do
-## TCP
+### TCP
 - ~~Fix oserror: per permanently~~
 - Open a new thread whenever a new connection ask for, custom thread number?, limit?
 - Client have a custom username
 - Nidesh DDoS acttack idea, "Around the World" one.
 
-## UDP
+### UDP
 - ~~UDP multicast~~
 - ~~Login screen~~
 - ~~Send a number with a message to keep the count and make sure all messages are delivered~~
