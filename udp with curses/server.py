@@ -12,7 +12,7 @@
 import socket
 import struct
 
-import pickle   # not pickle rick
+import pickle
 
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 9000
@@ -32,28 +32,22 @@ s.bind(('', MCAST_PORT))
 mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
-
-"""
-    a dictionary to store the client's information in the format:
-    { IP : [username, port, message_count] }
-"""
 client_addresses = {}
-print('Server is now running')
 
 while True:
     data, addr = s.recvfrom(10240)
     data = data.decode()
-    message = []    # initializing message array that holds username and message data to be sent back
+    message = []
     
     if data != "":
-        if data[0] == '@':      # check if data sent by client is username
+        if data[0] == '@':
             client_addresses[addr[0]] = [data]
             client_addresses[addr[0]].append(addr[1])
             client_addresses[addr[0]].append(0)
             print('User {0} has connected from IP {1}.'.format(data,addr[0]))
             message = ['SERVER','{0} has joined the group chat from IP {1}.'.format(data,addr[0])]
         else:
-            #print(client_addresses)
+            print(client_addresses)
             username = client_addresses[addr[0]][0]
             client_addresses[addr[0]][2] += 1
             print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))

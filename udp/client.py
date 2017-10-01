@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    client.py - UDP Chat app client
+    client.py - UDP Chat app client. Uses multi-threading; one thread to receive and the other to send messages
     Authors:
     - Hoanh An (hoanhan@bennington.edu)
     - Nidesh Chitrakar (nideshchitrakar@bennington.edu)
@@ -26,6 +26,7 @@ class ClientThread(threading.Thread):
         self.function = function
 
     def send(self):
+        print('Welcome to our UDP chat.')
         while True:
                 try:
                     username = input('To get started, please provide a username: ')
@@ -37,7 +38,6 @@ class ClientThread(threading.Thread):
                         break
                 except ValueError as e:
                     print(e)
-
         while True:
             MESSAGE = input("{0}: ".format(username))
 
@@ -48,23 +48,17 @@ class ClientThread(threading.Thread):
     def receive(self):
         while True:
             data, addr = s.recvfrom(1024)
-            #data = data.decode()
-            #print("RECEIVED {0} FROM {1}".format(data, addr[0]))
-            #print(data)
-            messageArray = pickle.loads(data)
+            messageArray = pickle.loads(data)   # message from server is received and stored as an array
             sender = messageArray[0]
             message = messageArray[1]
             print(' >> {0} : {1}'.format(sender,message))
 
     def run(self):
         #print('Starting Thread {0}'.format(self.thread_id))
-        print('Welcome to our UDP chat.')
-        
         if self.function == "SEND":
             self.send()
         elif self.function == "RECEIVE":
             self.receive()
-
         print('Finishing Thread {0}'.format(self.thread_id))
 
 thread_1 = ClientThread(1, "RECEIVE")
