@@ -11,8 +11,7 @@
 
 import socket
 import struct
-
-import pickle   # not pickle rick
+import pickle
 
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 9000
@@ -43,24 +42,29 @@ print('Server is now running')
 while True:
     data, addr = s.recvfrom(10240)
     data = data.decode()
-    message = []    # initializing message array that holds username and message data to be sent back
+    
+    # initializing message array that holds username and message data to be sent back
+    message = []
     
     if data != "":
-        if data[0] == '@':      # check if data sent by client is username
+        # check if data sent by client is username
+        if data[0] == '@':
             client_addresses[addr[0]] = [data]
             client_addresses[addr[0]].append(addr[1])
-            client_addresses[addr[0]].append(0)
-            print('User {0} has connected from IP {1}.'.format(data,addr[0]))
+            client_addresses[addr[0]].append(0)     # set default message_count = 0
             message = ['SERVER','{0} has joined the group chat from IP {1}.'.format(data,addr[0])]
+            print('User {0} has connected from IP {1}.'.format(data,addr[0]))
         else:
-            #print(client_addresses)
-            username = client_addresses[addr[0]][0]
-            client_addresses[addr[0]][2] += 1
-            print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
-            client_addresses[addr[0]][1] = addr[1]
-            message = [username, data]
+            try:
+                username = client_addresses[addr[0]][0]
+                print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
+                client_addresses[addr[0]][2] += 1       # increase messge_count by 1
+                client_addresses[addr[0]][1] = addr[1]  # update the client address's port
+                message = [username, data]
+            except KeyError:
+                print("Username doesn't exist")
         
-        # bounce the message back to the caller
+        # bounce the message back to the all the client, except the one who sent it
         for IP in client_addresses:
             if IP == addr[0]:
                 pass

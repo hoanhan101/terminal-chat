@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    client.py - UDP Chat app client. Uses multi-threading; one thread to receive and the other to send messages
+    client.py - UDP Chat app client.
     Authors:
     - Hoanh An (hoanhan@bennington.edu)
     - Nidesh Chitrakar (nideshchitrakar@bennington.edu)
@@ -11,7 +11,6 @@
 
 import socket
 import threading
-
 import pickle
 
 MCAST_GRP = '224.0.0.1'
@@ -27,9 +26,11 @@ class ClientThread(threading.Thread):
 
     def send(self):
         print('Welcome to our UDP chat.')
+
+        # only accept the username if it's not NULL
         while True:
                 try:
-                    username = input('To get started, please provide a username: ')
+                    username = input('To get started, please provide your username: ')
                     if not username:
                         raise ValueError("Username can't be NULL")
                     else:
@@ -38,6 +39,8 @@ class ClientThread(threading.Thread):
                         break
                 except ValueError as e:
                     print(e)
+        
+        # take input as message from user
         while True:
             MESSAGE = input("{0}: ".format(username))
 
@@ -48,10 +51,12 @@ class ClientThread(threading.Thread):
     def receive(self):
         while True:
             data, addr = s.recvfrom(1024)
-            messageArray = pickle.loads(data)   # message from server is received and stored as an array
+            
+            # message from server is received and stored as an array
+            messageArray = pickle.loads(data)
             sender = messageArray[0]
             message = messageArray[1]
-            print(' >> {0} : {1}'.format(sender,message))
+            print('{0} : {1}'.format(sender,message))
 
     def run(self):
         #print('Starting Thread {0}'.format(self.thread_id))
