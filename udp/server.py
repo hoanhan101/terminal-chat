@@ -51,10 +51,16 @@ while True:
         if data[0] == '@':
             client_addresses[addr[0]] = [data]
             client_addresses[addr[0]].append(addr[1])
+<<<<<<< Updated upstream
             client_addresses[addr[0]].append(0)     # set default message_count = 0
+=======
+            #client_addresses[addr[0]].append(0)
+            print('User {0} has connected from IP {1}.'.format(data,addr[0]))
+>>>>>>> Stashed changes
             message = ['SERVER','{0} has joined the group chat from IP {1}.'.format(data,addr[0])]
             print('User {0} has connected from IP {1}.'.format(data,addr[0]))
         else:
+<<<<<<< Updated upstream
             try:
                 username = client_addresses[addr[0]][0]
                 print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
@@ -63,6 +69,14 @@ while True:
                 message = [username, data]
             except KeyError:
                 print("Username doesn't exist")
+=======
+            #print(client_addresses)
+            username = client_addresses[addr[0]][0]
+            #client_addresses[addr[0]][2] += 1
+            print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
+            client_addresses[addr[0]][1] = addr[1]
+            message = [username, data]
+>>>>>>> Stashed changes
         
         # bounce the message back to the all the client, except the one who sent it
         for IP in client_addresses:

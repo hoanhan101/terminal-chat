@@ -27,7 +27,7 @@ s.bind(('', MCAST_PORT))
 
 # this is needed to set up the multicast group as an address to listen to
 # we get the mcast address in network order (aton) - INADDR_ANY in this case
-# just means listen on all local interfaces; we pack this into mreq so 
+# just means listen on all local interfaces; we pack this into mreq so
 # we can listen to all callers
 mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
@@ -38,7 +38,7 @@ while True:
     data, addr = s.recvfrom(10240)
     data = data.decode()
     message = []
-    
+
     if data != "":
         if data[0] == '@':
             client_addresses[addr[0]] = [data]
@@ -46,6 +46,10 @@ while True:
             client_addresses[addr[0]].append(0)
             print('User {0} has connected from IP {1}.'.format(data,addr[0]))
             message = ['SERVER','{0} has joined the group chat from IP {1}.'.format(data,addr[0])]
+        elif data == '/quit':
+            username = client_addresses[addr[0]][0]
+            print('User {0} has quit the group chat.'.format(username))
+            s.sendto(pickle.dumps(['server','/quit']), addr)
         else:
             print(client_addresses)
             username = client_addresses[addr[0]][0]
@@ -53,7 +57,7 @@ while True:
             print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
             client_addresses[addr[0]][1] = addr[1]
             message = [username, data]
-        
+
         # bounce the message back to the caller
         for IP in client_addresses:
             if IP == addr[0]:
@@ -61,5 +65,3 @@ while True:
             else:
                 s.sendto(pickle.dumps(message), (IP, client_addresses[IP][1]))
                 #print(" << {1} SENT {0} TO THE GROUP CHAT".format(data, username))
-
-
