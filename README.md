@@ -7,7 +7,7 @@ We set up a server to handle the mutiple requests using **Thread**. At the momen
 Back to our design priciples, when a request comes, a server get connection and address. We save the connection object and IP from the address in a dictionary as the format `{ConnectionObject : IP}`.  We get the data from the connection object and send back to all the client in that dictionary.
 
 ### Client
-Each client have 2 threads: one to send and one to receive.
+Each client have 2 threads: one to send and one to receive. 
 
 ## UDP Design
 ### Server:
@@ -20,7 +20,11 @@ Now we have the username from the first message, so from the second message, we 
 In the end, we use the client's dictionary to notify everyone in the group chat.
 
 ### Client
-Each client have 2 threads: one to send and one to receive.
+Each client have 2 threads: one to send and one to receive. 
+
+For the send thread, as we implemented the login interface, the first thing each client send to the server is his/her own username. We put a try except block here to make sure that the username will not be NULL. Otherwise, send the username or the message to the server.
+
+For the receive thread, we retrieved the data (an array containing the username and his/her corresponding message) using pickle, and displayed it on the screen.
 
 ## Testing
 For both TCP and UDP:
