@@ -28,7 +28,7 @@ curses.start_color()
 ui = ChatUI(stdscr)
 
 def send(stdscr):
-    ui.chatbuffer_add('Welcome to our UDP chat.')
+    ui.chatbuffer_add('Welcome to our UDP chat. To get started type your username.')
     username = ''
     while True:
             try:
@@ -60,15 +60,16 @@ def receive(stdscr):
     while True:
         data, addr = s.recvfrom(1024)
         messageArray = pickle.loads(data)
+        print(messageArray)
         sender = messageArray[0]
         message = messageArray[1]
-        if sender == 'SERVER' and message == '/quit':
-            break
-        else:
-            ui.chatbuffer_add(' >> {0} : {1}'.format(sender,message))
+        ui.chatbuffer_add(' >> {0} : {1}'.format(sender,message))
+        #break
+
 """
     Threading
 """
+
 class ClientThread(threading.Thread):
     def __init__(self, thread_id, function):
         threading.Thread.__init__(self)
@@ -82,27 +83,16 @@ class ClientThread(threading.Thread):
 
         if self.function == "SEND":
             wrapper(send)
-            #self.send()
         elif self.function == "RECEIVE":
             wrapper(receive)
-            #self.receive()
 
         print('Finishing Thread {0}'.format(self.thread_id))
-
-threads = []
 
 # creating new threads
 thread_1 = ClientThread(1, "SEND")
 thread_2 = ClientThread(2, "RECEIVE")
 
 # starting the threads
+thread_2.daemon = True
 thread_1.start()
 thread_2.start()
-
-# add the threads to the thread list
-threads.append(thread_1)
-threads.append(thread_2)
-
-# wait for all threads to complete
-# for thread in threads:
-#     thread.join()

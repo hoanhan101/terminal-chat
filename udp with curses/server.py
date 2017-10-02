@@ -46,17 +46,20 @@ while True:
             client_addresses[addr[0]].append(0)
             print('User {0} has connected from IP {1}.'.format(data,addr[0]))
             message = ['SERVER','{0} has joined the group chat from IP {1}.'.format(data,addr[0])]
-        elif data == '/quit':
-            username = client_addresses[addr[0]][0]
-            print('User {0} has quit the group chat.'.format(username))
-            s.sendto(pickle.dumps(['server','/quit']), addr)
+        # elif data == '/quit':
+        #     username = client_addresses[addr[0]][0]
+        #     print('User {0} has quit the group chat.'.format(username))
+        #     s.sendto(pickle.dumps(['SERVER','/quit']), addr)
         else:
             print(client_addresses)
             username = client_addresses[addr[0]][0]
             client_addresses[addr[0]][2] += 1
             print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
             client_addresses[addr[0]][1] = addr[1]
-            message = [username, data]
+            if data != '/quit':
+                message = [username, data]
+            else:
+                message = ['SERVER', '{0} has quit the group chat.'.format(username)]
 
         # bounce the message back to the caller
         for IP in client_addresses:
