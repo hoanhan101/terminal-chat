@@ -108,6 +108,10 @@ class ChatUI:
         #self.redraw_chatline()
         self.win_chatline.cursyncup()
 
+    def chatbuffer_clear(self):
+        self.chatbuffer.clear()
+        self.redraw_ui()
+
     def _linebuffer_add(self, msg):
         h, w = self.stdscr.getmaxyx()
         #u_h, u_w = self.win_userlist.getmaxyx()

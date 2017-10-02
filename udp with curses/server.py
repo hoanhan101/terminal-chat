@@ -28,43 +28,59 @@ s.bind(('', MCAST_PORT))
 # we get the mcast address in network order (aton) - INADDR_ANY in this case
 # just means listen on all local interfaces; we pack this into mreq so
 # we can listen to all callers
-mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
+mreq = struct.pack('4sl', socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
+# init a dictionary that stores client information in the format:
+# {IP : [username, address_port]}
 client_addresses = {}
-print('Server is now running')
+
+online_clients = []
+print('Server is now running...')
 
 while True:
+    # get data and address from the client
     data, addr = s.recvfrom(10240)
     data = data.decode()
+
+    # init a message array that holds username and data
     message = []
 
-    if data != "":
-        if data[0] == '@':
+    if data != '':
+        if data[0] == '@':  # if data is username
             client_addresses[addr[0]] = [data]
             client_addresses[addr[0]].append(addr[1])
-            client_addresses[addr[0]].append(0)
+            online_clients.append(data)
             print('User {0} has connected from IP {1}.'.format(data,addr[0]))
+            print('Current online clients: {0}'.format(online_clients))
             message = ['SERVER','{0} has joined the group chat from IP {1}.'.format(data,addr[0])]
-        # elif data == '/quit':
-        #     username = client_addresses[addr[0]][0]
-        #     print('User {0} has quit the group chat.'.format(username))
-        #     s.sendto(pickle.dumps(['SERVER','/quit']), addr)
-        else:
+        elif data == '/list':   # if data is /list command
+            username = client_addresses[addr[0]][0]
+            print('User {0} has requested a list of online clients.'.format(username))
+            message = ['SERVER', 'A list of online clients: {0}'.format(online_clients)]
+            s.sendto(pickle.dumps(message), addr)
+        elif data == '/help':   # if data is /help command
+            message = ['SERVER', '/list : list online clients. /quit : exit chat app.']
+            s.sendto(pickle.dumps(message), addr)
+        elif data == '/quit':   # if data is /quit command
+            username = client_addresses[addr[0]][0]
+            online_clients.remove(username)
+            print('User {0} has quit the group chat.'.format(username))
+            print('Current online clients: {0}'.format(online_clients))
+        else:   # if data is just message from client
             print(client_addresses)
             username = client_addresses[addr[0]][0]
-            client_addresses[addr[0]][2] += 1
-            print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
+            print('Message from {0}: {1}'.format(username, data))
             client_addresses[addr[0]][1] = addr[1]
             if data != '/quit':
                 message = [username, data]
             else:
                 message = ['SERVER', '{0} has quit the group chat.'.format(username)]
 
-        # bounce the message back to the caller
+
+        # bounce the message back to all clients, except the sender
         for IP in client_addresses:
             if IP == addr[0]:
                 pass
             else:
                 s.sendto(pickle.dumps(message), (IP, client_addresses[IP][1]))
-                #print(" << {1} SENT {0} TO THE GROUP CHAT".format(data, username))
