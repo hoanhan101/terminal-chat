@@ -55,27 +55,36 @@ while True:
             print('Current online clients: {0}'.format(online_clients))
             message = ['SERVER','{0} has joined the group chat from IP {1}.'.format(data,addr[0])]
         elif data == '/list':   # if data is /list command
-            username = client_addresses[addr[0]][0]
-            print('User {0} has requested a list of online clients.'.format(username))
-            message = ['SERVER', 'A list of online clients: {0}'.format(online_clients)]
-            s.sendto(pickle.dumps(message), addr)
+            try:
+                username = client_addresses[addr[0]][0]
+                print('User {0} has requested a list of online clients.'.format(username))
+                message = ['SERVER', 'A list of online clients: {0}'.format(online_clients)]
+                s.sendto(pickle.dumps(message), addr)
+            except KeyError:
+                print('User doesn\'t exist...')
         elif data == '/help':   # if data is /help command
             message = ['SERVER', '/list : list online clients. /quit : exit chat app.']
             s.sendto(pickle.dumps(message), addr)
         elif data == '/quit':   # if data is /quit command
-            username = client_addresses[addr[0]][0]
-            online_clients.remove(username)
-            print('User {0} has quit the group chat.'.format(username))
-            print('Current online clients: {0}'.format(online_clients))
+            try:
+                username = client_addresses[addr[0]][0]
+                online_clients.remove(username)
+                print('User {0} has quit the group chat.'.format(username))
+                print('Current online clients: {0}'.format(online_clients))
+            except KeyError:
+                print('User doesn\'t exist...')
         else:   # if data is just message from client
-            print(client_addresses)
-            username = client_addresses[addr[0]][0]
-            print('Message from {0}: {1}'.format(username, data))
-            client_addresses[addr[0]][1] = addr[1]
-            if data != '/quit':
-                message = [username, data]
-            else:
-                message = ['SERVER', '{0} has quit the group chat.'.format(username)]
+            try:
+                #print(client_addresses)
+                username = client_addresses[addr[0]][0]
+                print('Message from {0}: {1}'.format(username, data))
+                client_addresses[addr[0]][1] = addr[1]
+                if data != '/quit':
+                    message = [username, data]
+                else:
+                    message = ['SERVER', '{0} has quit the group chat.'.format(username)]
+            except KeyError:
+                print('User doesn\'t exist...')
 
 
         # bounce the message back to all clients, except the sender
