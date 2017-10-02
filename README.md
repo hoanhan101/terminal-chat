@@ -1,4 +1,4 @@
-# Group Chat Application
+# GROUP CHAT APP
 
 ![Amazing Nidesh](nidesh_is_amazing.png)
 
