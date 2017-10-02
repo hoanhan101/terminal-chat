@@ -7,6 +7,7 @@
     - Nidesh Chitrakar (nideshchitrakar@bennington.edu)
     - Dung Le (dungle@bennington.edu)
     Date: 09/29/17
+    Lastest Update: 10/1/17
 """
 
 import socket
@@ -31,40 +32,52 @@ s.bind(('', MCAST_PORT))
 mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
+# init a dict that store client information in the format:
+# {IP : [username, address_port, message_counter]}
 client_addresses = {}
 print('Server is now running')
 
+# continously get requests
 while True:
+    # get the data and address from the client
     data, addr = s.recvfrom(10240)
     data = data.decode()
+    
+    # init a message array which holds username and data
     message = []
-
+    
+    # check if data is NULL
     if data != "":
+        # if the data has @ in its first index, it has to be the username
         if data[0] == '@':
+            # use the IP as the key in clients' dictionary
             client_addresses[addr[0]] = [data]
+            # add the address port to the list
             client_addresses[addr[0]].append(addr[1])
+            # add the message counter to the list, start with 0
             client_addresses[addr[0]].append(0)
-            print('User {0} has connected from IP {1}.'.format(data,addr[0]))
+            # prepare the message to send back to all client in the group
             message = ['SERVER','{0} has joined the group chat from IP {1}.'.format(data,addr[0])]
-        # elif data == '/quit':
-        #     username = client_addresses[addr[0]][0]
-        #     print('User {0} has quit the group chat.'.format(username))
-        #     s.sendto(pickle.dumps(['SERVER','/quit']), addr)
-        else:
-            print(client_addresses)
-            username = client_addresses[addr[0]][0]
-            client_addresses[addr[0]][2] += 1
-            print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
-            client_addresses[addr[0]][1] = addr[1]
-            if data != '/quit':
-                message = [username, data]
-            else:
-                message = ['SERVER', '{0} has quit the group chat.'.format(username)]
+            print('User {0} has connected from IP {1}.'.format(data,addr[0]))
 
-        # bounce the message back to the caller
+        else:
+            try:
+                username = client_addresses[addr[0]][0]
+                # increase the message counter by 1
+                client_addresses[addr[0]][2] += 1
+                print("FROM {0} MESSAGE #{1}: \"{2}\"".format(username, client_addresses[addr[0]][2], data))
+                # update the client address port
+                client_addresses[addr[0]][1] = addr[1]
+                if data != '/quit':
+                    message = [username, data]
+                else:
+                    message = ['SERVER', '{0} has quit the group chat.'.format(username)]
+            except KeyError:
+                print("Username doesn't exist")
+
+        # bounce the message back to all the clients, except the sender
         for IP in client_addresses:
             if IP == addr[0]:
                 pass
             else:
                 s.sendto(pickle.dumps(message), (IP, client_addresses[IP][1]))
-                #print(" << {1} SENT {0} TO THE GROUP CHAT".format(data, username))

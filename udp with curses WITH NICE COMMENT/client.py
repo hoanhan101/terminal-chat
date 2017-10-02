@@ -7,6 +7,7 @@
     - Nidesh Chitrakar (nideshchitrakar@bennington.edu)
     - Dung Le (dungle@bennington.edu)
     Date: 09/29/17
+    Lastest Update: 10/1/17
 """
 
 import socket
@@ -21,19 +22,24 @@ MCAST_PORT = 9000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+# init UI screen
 stdscr = curses.initscr()
 curses.start_color()
 ui = ChatUI(stdscr)
 
 def send(stdscr):
-    ui.chatbuffer_add('Welcome to our UDP chat. To get started type your username.')
+    # add the welcome message to UI
+    ui.chatbuffer_add('Welcome to our UDP chat!')
+    # init an empty username string
     username = ''
+    # continue if username is NOT NULL
     while True:
             try:
                 username = ui.wait_input("Username: ")
                 if not username:
                     raise ValueError("Username can't be NULL")
                 else:
+                    # send @ with username to notify the server it's the username
                     username = '@' + username
                     ui.chatbuffer.append(username)
                     ui.redraw_chatbuffer()
@@ -41,7 +47,8 @@ def send(stdscr):
                     break
             except ValueError as e:
                 print(e)
-
+    
+    # continuously read user input and send to the server
     while True:
         MESSAGE = ""
         while MESSAGE != "/quit":
@@ -50,18 +57,19 @@ def send(stdscr):
             # broadcast our message to the world
             s.sendto(MESSAGE.encode(), (MCAST_GRP, MCAST_PORT))
             # add the message to the UI
-            ui.chatbuffer_add(' << {0} : {1}'.format(username,MESSAGE))
+            ui.chatbuffer_add('{0} : {1}'.format(username,MESSAGE))
         break
 
 def receive(stdscr):
     while True:
+        # get data and address from the server
         data, addr = s.recvfrom(1024)
-        messageArray = pickle.loads(data)
-        print(messageArray)
-        sender = messageArray[0]
-        message = messageArray[1]
-        ui.chatbuffer_add(' >> {0} : {1}'.format(sender,message))
-        #break
+        # load data into an array
+        message_array = pickle.loads(data)
+        sender = message_array[0]
+        message = message_array[1]
+        # send message to UI
+        ui.chatbuffer_add('{0} : {1}'.format(sender,message))
 
 """
     Threading
@@ -78,8 +86,6 @@ class ClientThread(threading.Thread):
             wrapper(send)
         elif self.function == "RECEIVE":
             wrapper(receive)
-
-        print('Finishing Thread {0}'.format(self.thread_id))
 
 # creating new threads
 thread_1 = ClientThread(1, "SEND")
