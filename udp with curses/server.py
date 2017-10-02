@@ -65,14 +65,14 @@ while True:
         elif data == '/help':   # if data is /help command
             message = ['SERVER', '/list : list online clients. /quit : exit chat app.']
             s.sendto(pickle.dumps(message), addr)
-        elif data == '/quit':   # if data is /quit command
-            try:
-                username = client_addresses[addr[0]][0]
-                online_clients.remove(username)
-                print('User {0} has quit the group chat.'.format(username))
-                print('Current online clients: {0}'.format(online_clients))
-            except KeyError:
-                print('User doesn\'t exist...')
+        # elif data == '/quit':   # if data is /quit command
+        #     try:
+        #         username = client_addresses[addr[0]][0]
+        #         online_clients.remove(username)
+        #         print('User {0} has quit the group chat.'.format(username))
+        #         print('Current online clients: {0}'.format(online_clients))
+        #     except KeyError:
+        #         print('User doesn\'t exist...')
         else:   # if data is just message from client
             try:
                 #print(client_addresses)
@@ -82,6 +82,9 @@ while True:
                 if data != '/quit':
                     message = [username, data]
                 else:
+                    online_clients.remove(username)
+                    print('User {0} has quit the group chat.'.format(username))
+                    print('Current online clients: {0}'.format(online_clients))
                     message = ['SERVER', '{0} has quit the group chat.'.format(username)]
             except KeyError:
                 print('User doesn\'t exist...')
