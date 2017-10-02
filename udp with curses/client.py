@@ -58,7 +58,6 @@ def receive(stdscr):
     while True:
         data, addr = s.recvfrom(1024)
         messageArray = pickle.loads(data)
-        print(messageArray)
         sender = messageArray[0]
         message = messageArray[1]
         if sender == 'SERVER':
