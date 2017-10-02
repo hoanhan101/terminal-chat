@@ -58,13 +58,13 @@ while True:
             try:
                 username = client_addresses[addr[0]][0]
                 print('User {0} has requested a list of online clients.'.format(username))
-                message = ['SERVER', 'A list of online clients: {0}'.format(online_clients)]
-                s.sendto(pickle.dumps(message), addr)
+                server_message = ['SERVER', 'A list of online clients: {0}'.format(online_clients)]
+                s.sendto(pickle.dumps(server_message), addr)
             except KeyError:
                 print('User doesn\'t exist...')
         elif data == '/help':   # if data is /help command
-            message = ['SERVER', '/list : list online clients. /quit : exit chat app.']
-            s.sendto(pickle.dumps(message), addr)
+            server_message = ['SERVER', '/list : list online clients. /quit : exit chat app.']
+            s.sendto(pickle.dumps(server_message), addr)
         else:   # if data is just message from client
             try:
                 #print(client_addresses)
@@ -83,8 +83,11 @@ while True:
 
 
         # bounce the message back to all clients, except the sender
-        for IP in client_addresses:
-            if IP == addr[0]:
-                pass
-            else:
-                s.sendto(pickle.dumps(message), (IP, client_addresses[IP][1]))
+        if not message:
+            pass
+        else:
+            for IP in client_addresses:
+                if IP == addr[0]:
+                    pass
+                else:
+                    s.sendto(pickle.dumps(message), (IP, client_addresses[IP][1]))
