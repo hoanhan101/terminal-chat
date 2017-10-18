@@ -1,8 +1,5 @@
 # GROUP CHAT APP
 
-![Amazing Nidesh](nidesh_is_amazing.png)
-
-
 ## UDP DESIGN
 ### SERVER
 We set up the server that listen to all the connections. Whenever a request comes, a server first get the data and address. Since in the client side, we set the first message sent by the client is his/her username. We use that data to store the username in a dictionary as the format: `{IP : [username, address_port, message_count]}`
